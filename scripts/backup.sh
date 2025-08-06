@@ -73,12 +73,12 @@ for SUFFIX in "${!WP_SUFFIXES[@]}"; do
         fi
 
         # Compress everything
-        ARCHIVE="$BACKUP_DIR/${RESOURCE_NAME}-backup-$DATE.tar.xz"
+        ARCHIVE="$BACKUP_DIR/${RESOURCE_NAME}-backup-$DATE.tar.gz"
         if [[ "$DRY_RUN" -eq 1 ]]; then
             log "[DRY RUN] Would create archive $ARCHIVE from $TMP_DIR"
         else
             log "🗜️  Creating archive $ARCHIVE"
-            tar -cJf "$ARCHIVE" -C "$TMP_DIR" .
+            tar -czf "$ARCHIVE" -C "$TMP_DIR" .
         fi
 
         # Cleanup
