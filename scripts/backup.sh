@@ -93,12 +93,4 @@ for SUFFIX in "${!WP_SUFFIXES[@]}"; do
 done
 
 # Run cleanup script at the end
-if [[ -f /app/cleanup.sh ]]; then
-    log "Running cleanup script..."
-    DRY_RUN=$DRY_RUN /app/cleanup.sh
-elif [[ -f $(dirname "$0")/cleanup.sh ]]; then
-    log "Running cleanup script..."
-    DRY_RUN=$DRY_RUN $(dirname "$0")/cleanup.sh
-else
-    log "Cleanup script not found. Skipping cleanup."
-fi
+DRY_RUN=$DRY_RUN cleanup
