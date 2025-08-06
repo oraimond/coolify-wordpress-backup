@@ -7,5 +7,11 @@
         "ports": {
             "expose": "80"
         }
-    }
+    },
+    "volumes": [
+      {
+        "source": "/var/run/docker.sock",
+        "target": "/var/run/docker.sock"
+      }
+    ]
 }

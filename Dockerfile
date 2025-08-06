@@ -3,22 +3,17 @@ FROM alpine:latest
 
 # Install dependencies
 RUN apk update && \
-    apk add --no-cache bash openrc docker-cli gzip tar
+    apk add --no-cache bash docker-cli gzip tar
 
 WORKDIR /app
 COPY scripts/backup.sh /app/backup.sh
 RUN chmod +x /app/backup.sh
 
-# Set DRY_RUN=1 by default, can be overridden in Coolify
-ENV DRY_RUN=1
-# Set CRON_SCHEDULE to daily at 2am by default, can be overridden in Coolify
-ENV CRON_SCHEDULE="0 2 * * *"
-
 # Create backup directory
 RUN mkdir -p /backups/wordpress
 
-# Copy entrypoint script for dynamic cron setup
-COPY scripts/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Add a symlink so 'backup' can be used as a command
+RUN ln -s /app/backup.sh /usr/local/bin/backup
 
-CMD ["/app/entrypoint.sh"]
+# On startup, do a single dry run, then sleep for scheduled tasks
+CMD ["/bin/sh", "-c", "DRY_RUN=1 backup && sleep infinity"]
