@@ -93,4 +93,4 @@ for SUFFIX in "${!WP_SUFFIXES[@]}"; do
 done
 
 # Run cleanup script at the end
-# DRY_RUN=$DRY_RUN cleanup
+DRY_RUN=$DRY_RUN cleanup

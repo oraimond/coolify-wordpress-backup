@@ -7,7 +7,9 @@ RUN apk update && \
 
 WORKDIR /app
 COPY scripts/backup.sh /app/backup.sh
-RUN chmod +x /app/backup.sh
+COPY scripts/cleanup.sh /app/cleanup.sh
+COPY scripts/restore.sh /app/restore.sh
+RUN chmod +x /app/backup.sh /app/cleanup.sh /app/restore.sh
 
 # Create backup directory
 RUN mkdir -p /backups/wordpress
