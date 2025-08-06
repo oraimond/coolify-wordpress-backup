@@ -43,8 +43,10 @@ for SUFFIX in "${!WP_SUFFIXES[@]}"; do
         fi
 
         # Get DB credentials from container ENV
+        log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
         if [[ "$DRY_RUN" -eq 1 ]]; then
-            echo "[DRY RUN] Would get DB credentials from $MARIADB_CONTAINER"
+            log "[DRY RUN] Would get DB credentials from $MARIADB_CONTAINER"
             DB_NAME="<db_name>"
             DB_USER="<db_user>"
             DB_PASS="<db_pass>"
@@ -56,36 +58,36 @@ for SUFFIX in "${!WP_SUFFIXES[@]}"; do
 
         # Dump MariaDB database
         if [[ "$DRY_RUN" -eq 1 ]]; then
-            echo "[DRY RUN] Would dump DB for $RESOURCE_NAME to $TMP_DIR/db.sql using mariadb-dump -u$DB_USER -p$DB_PASS $DB_NAME"
+            log "[DRY RUN] Would dump DB for $RESOURCE_NAME to $TMP_DIR/db.sql using mariadb-dump -u$DB_USER -p$DB_PASS $DB_NAME"
         else
-            echo "💾 Dumping DB for $RESOURCE_NAME to $TMP_DIR/db.sql"
+            log "💾 Dumping DB for $RESOURCE_NAME to $TMP_DIR/db.sql"
             docker exec "$MARIADB_CONTAINER" mariadb-dump -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" > "$TMP_DIR/db.sql"
         fi
 
         # Copy WordPress files
         if [[ "$DRY_RUN" -eq 1 ]]; then
-            echo "[DRY RUN] Would copy WordPress files for $RESOURCE_NAME from $WP_CONTAINER:/var/www/html to $TMP_DIR/html"
+            log "[DRY RUN] Would copy WordPress files for $RESOURCE_NAME from $WP_CONTAINER:/var/www/html to $TMP_DIR/html"
         else
-            echo "📦 Copying WordPress files for $RESOURCE_NAME to $TMP_DIR/html"
+            log "📦 Copying WordPress files for $RESOURCE_NAME to $TMP_DIR/html"
             docker cp "$WP_CONTAINER":/var/www/html "$TMP_DIR/html"
         fi
 
         # Compress everything
         ARCHIVE="$BACKUP_DIR/${RESOURCE_NAME}-backup-$DATE.tar.xz"
         if [[ "$DRY_RUN" -eq 1 ]]; then
-            echo "[DRY RUN] Would create archive $ARCHIVE from $TMP_DIR"
+            log "[DRY RUN] Would create archive $ARCHIVE from $TMP_DIR"
         else
-            echo "🗜️  Creating archive $ARCHIVE"
+            log "🗜️  Creating archive $ARCHIVE"
             tar -cJf "$ARCHIVE" -C "$TMP_DIR" .
         fi
 
         # Cleanup
         if [[ "$DRY_RUN" -eq 1 ]]; then
-            echo "[DRY RUN] Would remove $TMP_DIR"
+            log "[DRY RUN] Would remove $TMP_DIR"
         else
             rm -rf "$TMP_DIR"
         fi
 
-        echo "✅ Backup complete: $ARCHIVE"
+        log "✅ Backup complete: $ARCHIVE"
     fi
 done
